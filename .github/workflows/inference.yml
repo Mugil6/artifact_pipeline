@@ -15,8 +15,8 @@ jobs:
         python-version: '3.11'
     - name: Install dependencies
       run: pip install -r requirements.txt
-    - name: Run Tests
-      run: pytest tests
+    - name: Run tests
+      run: PYTHONPATH=. pytest tests
 
   train:
     needs: test
@@ -29,9 +29,9 @@ jobs:
         python-version: '3.11'
     - name: Install dependencies
       run: pip install -r requirements.txt
-    - name: Train Model
-      run: python src/train.py
-    - name: Upload Model
+    - name: Train model
+      run: PYTHONPATH=. python src/train.py
+    - name: Upload model
       uses: actions/upload-artifact@v4
       with:
         name: model
@@ -48,10 +48,11 @@ jobs:
         python-version: '3.11'
     - name: Install dependencies
       run: pip install -r requirements.txt
-    - name: Download Model
+    - name: Download model
       uses: actions/download-artifact@v4
       with:
         name: model
         path: .
-    - name: Run Inference
-      run: python src/inference.py
+    - name: Run inference
+      run: PYTHONPATH=. python src/inference.py
+
