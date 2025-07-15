@@ -1,0 +1,1 @@
+# MLOps artifact pipeline
