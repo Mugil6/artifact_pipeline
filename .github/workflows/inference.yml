@@ -1,0 +1,57 @@
+name: Full CI Pipeline
+
+on:
+  push:
+    branches: [ inference ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Run Tests
+      run: pytest tests
+
+  train:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Train Model
+      run: python src/train.py
+    - name: Upload Model
+      uses: actions/upload-artifact@v4
+      with:
+        name: model
+        path: model_train.pkl
+
+  inference:
+    needs: train
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+    - name: Download Model
+      uses: actions/download-artifact@v4
+      with:
+        name: model
+        path: .
+    - name: Run Inference
+      run: python src/inference.py
